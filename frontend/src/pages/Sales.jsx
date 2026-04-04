@@ -45,24 +45,37 @@ function SearchBar({ value, onChange }) {
   )
 }
 
-/* ─── Analytics Placeholder ──────────────────────────────────── */
-function AnalyticsPlaceholder() {
+/* ─── Analytics Placeholder (collapsible) ────────────────────── */
+function AnalyticsPlaceholder({ open, onToggle }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 py-16"
-         style={{ border: '1px dashed var(--border-subtle)', borderRadius: 12,
-                  margin: '20px 24px' }}>
-      <div className="text-4xl" style={{ animation: 'spin 8s linear infinite', display: 'inline-block' }}>
-        ⚙️
-      </div>
-      <h3 className="text-lg font-display font-semibold"
-          style={{ color: 'var(--text-secondary)', fontFamily: 'Syne, sans-serif' }}>
-        Sales Analytics
-      </h3>
-      <p className="text-sm text-center max-w-sm"
-         style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
-        Coming in Phase 2 — SIP trends, target vs achievement charts, bounce rate analysis,
-        RM performance scorecards.
-      </p>
+    <div style={{ borderTop: '1px solid var(--border-subtle)' }}>
+      {/* Toggle bar */}
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-6 py-2.5 transition-colors duration-150"
+        style={{ background: 'var(--bg-secondary)', cursor: 'pointer', border: 'none' }}
+        onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
+      >
+        <span className="flex items-center gap-2 text-[12px]"
+              style={{ color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em' }}>
+          <span style={{ animation: open ? 'spin 8s linear infinite' : 'none', display: 'inline-block' }}>⚙️</span>
+          SALES ANALYTICS — PHASE 2
+        </span>
+        <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{open ? '▼' : '▲'}</span>
+      </button>
+
+      {open && (
+        <div className="flex flex-col items-center justify-center gap-3 py-10"
+             style={{ border: '1px dashed var(--border-subtle)', borderRadius: 12,
+                      margin: '0 24px 16px' }}>
+          <p className="text-sm text-center max-w-sm"
+             style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+            Coming in Phase 2 — SIP trends, target vs achievement charts, bounce rate analysis,
+            RM performance scorecards.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -140,6 +153,7 @@ const COLUMNS = [
 export default function Sales() {
   const { data, isLoading, error } = useRMList()
   const [search, setSearch] = useState('')
+  const [analyticsOpen, setAnalyticsOpen] = useState(false)
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -149,10 +163,10 @@ export default function Sales() {
   }, [data, search])
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
 
       {/* ── Table section ── */}
-      <div className="flex-1 overflow-hidden flex flex-col" style={{ minHeight: 0 }}>
+      <div className="flex-1 flex flex-col" style={{ minHeight: 0, overflow: 'hidden' }}>
         {/* Toolbar */}
         <div className="flex items-center justify-between px-6 py-3 shrink-0"
              style={{ borderBottom: '1px solid var(--border-subtle)' }}>
@@ -193,8 +207,8 @@ export default function Sales() {
       </div>
 
       {/* ── Analytics Placeholder ── */}
-      <div className="shrink-0" style={{ height: '220px', borderTop: '1px solid var(--border-subtle)' }}>
-        <AnalyticsPlaceholder />
+      <div className="shrink-0">
+        <AnalyticsPlaceholder open={analyticsOpen} onToggle={() => setAnalyticsOpen(v => !v)} />
       </div>
     </div>
   )

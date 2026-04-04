@@ -71,21 +71,36 @@ function DateFilter({ label, value, onChange }) {
   )
 }
 
-/* ─── Analytics Placeholder ──────────────────────────────────── */
-function AnalyticsPlaceholder() {
+/* ─── Analytics Placeholder (collapsible) ────────────────────── */
+function AnalyticsPlaceholder({ open, onToggle }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 py-12"
-         style={{ border: '1px dashed var(--border-subtle)', borderRadius: 12, margin: '16px 24px' }}>
-      <div className="text-4xl" style={{ animation: 'spin 8s linear infinite', display: 'inline-block' }}>⚙️</div>
-      <h3 className="text-lg font-display font-semibold"
-          style={{ color: 'var(--text-secondary)', fontFamily: 'Syne, sans-serif' }}>
-        Operations Analytics
-      </h3>
-      <p className="text-sm text-center max-w-sm"
-         style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
-        Coming in Phase 2 — Task completion rates, TAT analysis, RM workload distribution,
-        rejection reason breakdown.
-      </p>
+    <div style={{ borderTop: '1px solid var(--border-subtle)' }}>
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-6 py-2.5 transition-colors duration-150"
+        style={{ background: 'var(--bg-secondary)', cursor: 'pointer', border: 'none' }}
+        onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
+      >
+        <span className="flex items-center gap-2 text-[12px]"
+              style={{ color: 'var(--text-muted)', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em' }}>
+          <span style={{ animation: open ? 'spin 8s linear infinite' : 'none', display: 'inline-block' }}>⚙️</span>
+          OPERATIONS ANALYTICS — PHASE 2
+        </span>
+        <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{open ? '▼' : '▲'}</span>
+      </button>
+
+      {open && (
+        <div className="flex flex-col items-center justify-center gap-3 py-10"
+             style={{ border: '1px dashed var(--border-subtle)', borderRadius: 12,
+                      margin: '0 24px 16px' }}>
+          <p className="text-sm text-center max-w-sm"
+             style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+            Coming in Phase 2 — Task completion rates, TAT analysis, RM workload distribution,
+            rejection reason breakdown.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -151,6 +166,7 @@ function buildColumns() {
 
 /* ─── Operations Page ─────────────────────────────────────────── */
 export default function Operations() {
+  const [analyticsOpen, setAnalyticsOpen] = useState(false)
   const [filters, setFilters] = useState({
     ops_member: '', rm_name: '', task_name: '', status: '',
     start_from: '', start_to: '',
@@ -174,7 +190,7 @@ export default function Operations() {
   const columns = buildColumns()
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
 
       {/* ── Summary Cards ── */}
       {summary && (
@@ -252,8 +268,8 @@ export default function Operations() {
       </div>
 
       {/* ── Analytics Placeholder ── */}
-      <div className="shrink-0" style={{ height: '180px', borderTop: '1px solid var(--border-subtle)' }}>
-        <AnalyticsPlaceholder />
+      <div className="shrink-0">
+        <AnalyticsPlaceholder open={analyticsOpen} onToggle={() => setAnalyticsOpen(v => !v)} />
       </div>
     </div>
   )
