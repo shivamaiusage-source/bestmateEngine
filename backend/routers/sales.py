@@ -15,6 +15,109 @@ def get_rm_list():
     return res.data
 
 
+@router.get("/mtd-view")
+def get_mtd_view(month: Optional[str] = None):
+    """
+    MTD (Month-To-Date) view — mirrors the Excel MTD sheet.
+    Returns per-RM target vs achievement for the given month,
+    plus a Bestmate totals row.
+    """
+    sb = get_supabase()
+
+    # Auto-detect latest month if not supplied
+    if not month:
+        latest = (
+            sb.table("rm_monthly_targets")
+            .select("month, year, month_num")
+            .order("year", desc=True)
+            .order("month_num", desc=True)
+            .limit(1)
+            .execute()
+            .data
+        )
+        month = latest[0]["month"] if latest else None
+
+    # Fetch targets for the month
+    q = sb.table("rm_monthly_targets").select("*")
+    if month:
+        q = q.eq("month", month)
+    rows = q.order("rm_name").execute().data
+
+    # If no monthly targets exist yet, fall back to RM master + zeros
+    if not rows:
+        rms = (
+            sb.table("relationship_managers")
+            .select("id, name, sip_target_monthly, demat_target")
+            .eq("is_active", True)
+            .order("name")
+            .execute()
+            .data
+        )
+        rows = [
+            {
+                "rm_name":              r["name"],
+                "rm_id":                r["id"],
+                "sip_target":           r.get("sip_target_monthly") or 0,
+                "sip_achieved":         0,
+                "sip_bounce_amt":       0,
+                "lumpsum_fresh_target": 0,
+                "lumpsum_fresh_done":   0,
+                "final_achievement_pct":0,
+                "demat_ac_target":      r.get("demat_target") or 0,
+                "demat_ac_done":        0,
+                "demat_amount_target":  0,
+                "demat_amount_done":    0,
+                "mfd_target":           0,
+                "mfd_done":             0,
+                "nism_target":          0,
+                "nism_done":            0,
+                "mfd_activation_target":0,
+                "mfd_activation_done":  0,
+                "ulip_target":          0,
+                "ulip_done":            0,
+                "term_plan_target":     0,
+                "term_plan_done":       0,
+                "traditional_plan_target": 0,
+                "traditional_plan_done":   0,
+            }
+            for r in rms
+        ]
+
+    def _sum(field):
+        return sum((r.get(field) or 0) for r in rows)
+
+    sip_t  = _sum("sip_target")
+    sip_a  = _sum("sip_achieved")
+    totals = {
+        "rm_name":                  "Bestmate (Total)",
+        "is_total":                 True,
+        "sip_target":               sip_t,
+        "sip_achieved":             sip_a,
+        "sip_bounce_amt":           _sum("sip_bounce_amt"),
+        "lumpsum_fresh_target":     _sum("lumpsum_fresh_target"),
+        "lumpsum_fresh_done":       _sum("lumpsum_fresh_done"),
+        "final_achievement_pct":    round(sip_a / sip_t * 100, 2) if sip_t else 0,
+        "demat_ac_target":          _sum("demat_ac_target"),
+        "demat_ac_done":            _sum("demat_ac_done"),
+        "demat_amount_target":      _sum("demat_amount_target"),
+        "demat_amount_done":        _sum("demat_amount_done"),
+        "mfd_target":               _sum("mfd_target"),
+        "mfd_done":                 _sum("mfd_done"),
+        "nism_target":              _sum("nism_target"),
+        "nism_done":                _sum("nism_done"),
+        "mfd_activation_target":    _sum("mfd_activation_target"),
+        "mfd_activation_done":      _sum("mfd_activation_done"),
+        "ulip_target":              _sum("ulip_target"),
+        "ulip_done":                _sum("ulip_done"),
+        "term_plan_target":         _sum("term_plan_target"),
+        "term_plan_done":           _sum("term_plan_done"),
+        "traditional_plan_target":  _sum("traditional_plan_target"),
+        "traditional_plan_done":    _sum("traditional_plan_done"),
+    }
+
+    return {"month": month, "data": rows, "totals": totals}
+
+
 @router.get("/sip-records")
 def get_sip_records(
     rm_id: Optional[str] = None,
