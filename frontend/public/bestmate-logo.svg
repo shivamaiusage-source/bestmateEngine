@@ -1,0 +1,18 @@
+<svg viewBox="0 0 320 82" xmlns="http://www.w3.org/2000/svg">
+  <text x="2" y="60" font-family="Syne, sans-serif" font-weight="800"
+        font-size="54" fill="#e8f5e2" letter-spacing="-2">BEST</text>
+  <g transform="translate(158, 2)">
+    <circle cx="13" cy="11" r="7.5" fill="#8dc63f"/>
+    <path d="M4 28 Q13 16 22 28 L24 58 L16 58 L13 50 L10 58 L2 58 Z" fill="#8dc63f"/>
+    <circle cx="34" cy="11" r="7.5" fill="#8dc63f"/>
+    <path d="M26 28 Q34 16 43 28 L46 58 L37 58 L34 50 L31 58 L22 58 Z" fill="#8dc63f"/>
+    <path d="M0 32 L13 16 L24 26 L34 16 L47 32"
+          stroke="#8dc63f" stroke-width="2.5" fill="none" opacity="0.5"/>
+  </g>
+  <text x="210" y="60" font-family="Syne, sans-serif" font-weight="800"
+        font-size="54" fill="#e8f5e2" letter-spacing="-2">ATE</text>
+  <text x="162" y="78" font-family="Inter, sans-serif" font-weight="500"
+        font-size="10" fill="#4a6b42" text-anchor="middle" letter-spacing="5">
+    INVEST WISELY
+  </text>
+</svg>

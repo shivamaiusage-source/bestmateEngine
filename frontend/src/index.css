@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary:     #0a1a0f;
+  --bg-secondary:   #0f2318;
+  --bg-tertiary:    #152d1e;
+  --bg-hover:       #1a3d28;
+  --bg-active:      #1f4f32;
+
+  --accent-primary: #8dc63f;
+  --accent-light:   #a8d94f;
+  --accent-glow:    rgba(141, 198, 63, 0.15);
+
+  --text-primary:   #e8f5e2;
+  --text-secondary: #7aad6a;
+  --text-muted:     #4a6b42;
+
+  --status-success: #4ade80;
+  --status-warning: #fbbf24;
+  --status-danger:  #f87171;
+  --status-info:    #60a5fa;
+
+  --border-subtle:  rgba(141, 198, 63, 0.12);
+  --border-default: rgba(141, 198, 63, 0.25);
+  --border-strong:  rgba(141, 198, 63, 0.5);
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-data:    'IBM Plex Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(141, 198, 63, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(141, 198, 63, 0.5);
+}
+
+/* Focus styles */
+input:focus, button:focus, select:focus {
+  outline: none;
+}
+
+/* Custom selection */
+::selection {
+  background: rgba(141, 198, 63, 0.25);
+  color: var(--text-primary);
+}
+
+/* Table styles */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+}
+
+.data-table thead th {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.data-table thead th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.data-table thead th.sortable:hover {
+  color: var(--accent-primary);
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.15s ease;
+}
+
+.data-table tbody tr:nth-child(odd) {
+  background: var(--bg-secondary);
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: #111f16;
+}
+
+.data-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.data-table tbody td {
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* Mono number cells */
+.mono {
+  font-family: var(--font-data);
+}
+
+/* Gear animation */
+@keyframes gearSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes gearSpinReverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes particleDrift {
+  0%   { transform: translateY(0px);   opacity: 0.4; }
+  50%  { transform: translateY(-30px); opacity: 0.8; }
+  100% { transform: translateY(-60px); opacity: 0; }
+}
+
+@keyframes nodeOrbit {
+  0%   { transform: rotate(0deg)   translateX(90px) rotate(0deg);   }
+  100% { transform: rotate(360deg) translateX(90px) rotate(-360deg); }
+}
+
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1);   }
+  50%       { transform: scale(1.2); }
+}
+
+@keyframes streamFlow {
+  0%   { stroke-dashoffset: 80; opacity: 0.3; }
+  50%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.3; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect */
+.glow-lime {
+  box-shadow: 0 0 20px rgba(141, 198, 63, 0.3),
+              0 0 40px rgba(141, 198, 63, 0.1);
+}
+
+/* Card base */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Input base */
+.input-dark {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-data);
+  padding: 10px 14px;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-dark:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(141, 198, 63, 0.15);
+}
+
+.input-dark::placeholder {
+  color: var(--text-muted);
+}
