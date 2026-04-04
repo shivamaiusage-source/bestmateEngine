@@ -14,6 +14,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://bestmateengine.vercel.app",
+        "https://bestmate-engine.vercel.app",
         "http://localhost:5173",
         "http://localhost:3000",
     ],
