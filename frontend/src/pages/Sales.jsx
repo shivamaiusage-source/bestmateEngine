@@ -253,7 +253,7 @@ function AnalyticsPlaceholder({ open, onToggle }) {
 /* ─── Sales Page ─────────────────────────────────────────────── */
 export default function Sales() {
   const [selectedMonth, setSelectedMonth] = useState(null)
-  const { data: months } = useMTDMonths()
+  const { data: months, isLoading: monthsLoading } = useMTDMonths()
   const { data: mtd, isLoading, error } = useMTDView(selectedMonth)
   const [analyticsOpen, setAnalyticsOpen] = useState(false)
 
@@ -285,30 +285,33 @@ export default function Sales() {
         </div>
 
         {/* ── Month selector ── */}
-        {months && months.length > 0 && (
-          <select
-            value={selectedMonth ?? ''}
-            onChange={e => setSelectedMonth(e.target.value || null)}
-            style={{
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-primary)',
-              borderRadius: 6,
-              padding: '4px 10px',
-              fontSize: 12,
-              fontFamily: 'IBM Plex Mono, monospace',
-              cursor: 'pointer',
-              outline: 'none',
-            }}
-          >
-            <option value="">Latest</option>
-            {months.map(m => (
-              <option key={m.month} value={m.month}>
-                {m.month}
-              </option>
-            ))}
-          </select>
-        )}
+        <select
+          value={selectedMonth ?? ''}
+          onChange={e => setSelectedMonth(e.target.value || null)}
+          disabled={monthsLoading || !months}
+          style={{
+            background: 'var(--bg-tertiary)',
+            border: '1px solid var(--border-subtle)',
+            color: monthsLoading ? 'var(--text-muted)' : 'var(--text-primary)',
+            borderRadius: 6,
+            padding: '4px 10px',
+            fontSize: 12,
+            fontFamily: 'IBM Plex Mono, monospace',
+            cursor: monthsLoading ? 'not-allowed' : 'pointer',
+            outline: 'none',
+            minWidth: 140,
+          }}
+        >
+          {monthsLoading
+            ? <option value="">Loading months…</option>
+            : <>
+                <option value="">Latest</option>
+                {(months ?? []).map(m => (
+                  <option key={m.month} value={m.month}>{m.month}</option>
+                ))}
+              </>
+          }
+        </select>
       </div>
 
       {/* ── Error ── */}

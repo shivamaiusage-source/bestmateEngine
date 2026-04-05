@@ -10,6 +10,7 @@ export const useMTDMonths = () => useQuery({
   queryKey: ['mtd-months'],
   queryFn:  () => api.get('/api/sales/mtd-months').then(r => r.data),
   staleTime: 10 * 60 * 1000,
+  retry: 1,
 })
 
 export const useMTDView = (month = null) => useQuery({

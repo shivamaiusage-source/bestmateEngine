@@ -59,15 +59,16 @@ def get_mtd_view(month: Optional[str] = None):
         )
         month = latest[0]["month"] if latest else None
 
-    # Fetch only active RM IDs to filter out inactive/removed RMs
-    active_rm_ids = {
-        r["id"]
-        for r in sb.table("relationship_managers")
-        .select("id")
+    # Fetch only active RMs (both id and name) to filter out inactive/removed RMs
+    active_rms = (
+        sb.table("relationship_managers")
+        .select("id, name")
         .eq("is_active", True)
         .execute()
         .data
-    }
+    )
+    active_rm_ids   = {r["id"]   for r in active_rms}
+    active_rm_names = {r["name"].strip().lower() for r in active_rms}
 
     # Fetch targets for the month
     q = sb.table("rm_monthly_targets").select("*")
@@ -75,8 +76,14 @@ def get_mtd_view(month: Optional[str] = None):
         q = q.eq("month", month)
     all_rows = q.order("rm_name").execute().data
 
-    # Keep only rows belonging to active RMs
-    rows = [r for r in all_rows if r.get("rm_id") in active_rm_ids]
+    # Keep only rows whose rm_id OR rm_name matches an active RM
+    def _is_active_rm(row):
+        if row.get("rm_id") and row["rm_id"] in active_rm_ids:
+            return True
+        name = (row.get("rm_name") or "").strip().lower()
+        return name in active_rm_names
+
+    rows = [r for r in all_rows if _is_active_rm(r)]
 
     # If no monthly targets exist yet, fall back to RM master + zeros
     if not rows:
