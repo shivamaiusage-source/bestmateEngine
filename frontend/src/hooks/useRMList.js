@@ -6,6 +6,12 @@ export const useRMList = () => useQuery({
   queryFn:  () => api.get('/api/sales/rm-list').then(r => r.data),
 })
 
+export const useMTDMonths = () => useQuery({
+  queryKey: ['mtd-months'],
+  queryFn:  () => api.get('/api/sales/mtd-months').then(r => r.data),
+  staleTime: 10 * 60 * 1000,
+})
+
 export const useMTDView = (month = null) => useQuery({
   queryKey: ['mtd-view', month],
   queryFn:  () => api.get('/api/sales/mtd-view', { params: month ? { month } : {} }).then(r => r.data),

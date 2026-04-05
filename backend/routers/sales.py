@@ -15,6 +15,28 @@ def get_rm_list():
     return res.data
 
 
+@router.get("/mtd-months")
+def get_mtd_months():
+    """Return all distinct months available in rm_monthly_targets, sorted newest first."""
+    sb = get_supabase()
+    res = (
+        sb.table("rm_monthly_targets")
+        .select("month, year, month_num")
+        .order("year", desc=True)
+        .order("month_num", desc=True)
+        .execute()
+        .data
+    )
+    seen = set()
+    months = []
+    for r in res:
+        key = r["month"]
+        if key not in seen:
+            seen.add(key)
+            months.append({"month": r["month"], "year": r["year"], "month_num": r["month_num"]})
+    return months
+
+
 @router.get("/mtd-view")
 def get_mtd_view(month: Optional[str] = None):
     """
@@ -37,11 +59,24 @@ def get_mtd_view(month: Optional[str] = None):
         )
         month = latest[0]["month"] if latest else None
 
+    # Fetch only active RM IDs to filter out inactive/removed RMs
+    active_rm_ids = {
+        r["id"]
+        for r in sb.table("relationship_managers")
+        .select("id")
+        .eq("is_active", True)
+        .execute()
+        .data
+    }
+
     # Fetch targets for the month
     q = sb.table("rm_monthly_targets").select("*")
     if month:
         q = q.eq("month", month)
-    rows = q.order("rm_name").execute().data
+    all_rows = q.order("rm_name").execute().data
+
+    # Keep only rows belonging to active RMs
+    rows = [r for r in all_rows if r.get("rm_id") in active_rm_ids]
 
     # If no monthly targets exist yet, fall back to RM master + zeros
     if not rows:

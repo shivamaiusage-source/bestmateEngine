@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { useMTDView } from '../hooks/useRMList'
+import { useState } from 'react'
+import { useMTDView, useMTDMonths } from '../hooks/useRMList'
 
 /* ─── Formatters ──────────────────────────────────────────────── */
 function fmtINR(val) {
@@ -252,7 +252,9 @@ function AnalyticsPlaceholder({ open, onToggle }) {
 
 /* ─── Sales Page ─────────────────────────────────────────────── */
 export default function Sales() {
-  const { data: mtd, isLoading, error } = useMTDView()
+  const [selectedMonth, setSelectedMonth] = useState(null)
+  const { data: months } = useMTDMonths()
+  const { data: mtd, isLoading, error } = useMTDView(selectedMonth)
   const [analyticsOpen, setAnalyticsOpen] = useState(false)
 
   const currentMonth = mtd?.month ?? '—'
@@ -281,6 +283,32 @@ export default function Sales() {
             </span>
           )}
         </div>
+
+        {/* ── Month selector ── */}
+        {months && months.length > 0 && (
+          <select
+            value={selectedMonth ?? ''}
+            onChange={e => setSelectedMonth(e.target.value || null)}
+            style={{
+              background: 'var(--bg-tertiary)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
+              borderRadius: 6,
+              padding: '4px 10px',
+              fontSize: 12,
+              fontFamily: 'IBM Plex Mono, monospace',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            <option value="">Latest</option>
+            {months.map(m => (
+              <option key={m.month} value={m.month}>
+                {m.month}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* ── Error ── */}
